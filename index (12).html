@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Vinayak Mishra · Custom Software Developer</title>
+  <meta name="description" content="Vinayak Mishra - Custom Software Developer & Systems Engineer, IIT Madras Scholar." />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@300;400;600;700;900&family=Montserrat:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            canvas: '#05050A',
+            surface: '#0E0E14',
+            line: '#1E1E28',
+            accent: '#8B5CF6',
+          },
+          fontFamily: {
+            display: ['Unbounded', 'sans-serif'],
+            body: ['Montserrat', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+        },
+      },
+    };
+  </script>
+
+  <style>
+    /* Custom scrollbar */
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-track { background: #05050A; }
+    ::-webkit-scrollbar-thumb { background: #1E1E28; border-radius: 8px; }
+    ::-webkit-scrollbar-thumb:hover { background: #8B5CF6; }
+    html { scrollbar-width: thin; scrollbar-color: #1E1E28 #05050A; }
+
+    body {
+      background-color: #05050A;
+      background-image:
+        radial-gradient(circle at 50% 0%, rgba(139, 92, 246, 0.12), transparent 70%),
+        radial-gradient(circle at 90% 60%, rgba(139, 92, 246, 0.06), transparent 50%);
+      background-attachment: fixed;
+      color: #E4E4EC;
+      font-family: 'Montserrat', sans-serif;
+      cursor: none;
+      overflow-x: hidden;
+    }
+
+    /* Magnetic cursor */
+    .cursor-dot, .cursor-ring {
+      position: fixed; top: 0; left: 0; pointer-events: none; z-index: 9999;
+      border-radius: 50%; transform: translate(-50%, -50%);
+    }
+    .cursor-dot { width: 6px; height: 6px; background: #8B5CF6; }
+    .cursor-ring {
+      width: 36px; height: 36px; border: 1px solid rgba(139, 92, 246, 0.6);
+      transition: width .25s ease, height .25s ease, background .25s ease;
+    }
+    .cursor-ring.hover { width: 60px; height: 60px; background: rgba(139, 92, 246, 0.1); }
+    @media (hover: none), (pointer: coarse) {
+      body { cursor: auto; }
+      .cursor-dot, .cursor-ring { display: none; }
+    }
+
+    /* Glow and surfaces */
+    .glow-orb {
+      position: absolute; border-radius: 50%; filter: blur(90px);
+      background: rgba(139, 92, 246, 0.25); pointer-events: none; z-index: 0;
+    }
+    .card {
+      background: #0E0E14; border: 1px solid #1E1E28;
+      transition: border-color .3s ease, box-shadow .3s ease, transform .3s ease;
+    }
+    .card:hover {
+      border-color: #8B5CF6;
+      box-shadow: 0 0 30px rgba(139, 92, 246, 0.15);
+    }
+    .glow-btn:hover { box-shadow: 0 0 25px rgba(139, 92, 246, 0.55); }
+
+    /* Photo duotone matching the violet theme */
+    .photo-frame { position: relative; overflow: hidden; border-radius: 1.5rem; border: 1px solid #1E1E28; transition: border-color .3s, box-shadow .3s; }
+    .photo-frame:hover { border-color: #8B5CF6; box-shadow: 0 0 40px rgba(139, 92, 246, 0.35); }
+    .photo-frame img {
+      width: 100%; height: 100%; object-fit: cover; display: block;
+      filter: grayscale(1) contrast(1.15) brightness(0.9);
+      transition: filter .4s ease;
+    }
+    .photo-frame::before {
+      content: ""; position: absolute; inset: 0; z-index: 1;
+      background: #8B5CF6; mix-blend-mode: color; opacity: .55; pointer-events: none;
+    }
+    .photo-frame::after {
+      content: ""; position: absolute; inset: 0; z-index: 2; pointer-events: none;
+      background: linear-gradient(to top, #0E0E14 0%, transparent 45%),
+                  linear-gradient(to right, rgba(5,5,10,.6), transparent 25%);
+    }
+    .photo-frame:hover img { filter: grayscale(.4) contrast(1.1) brightness(1); }
+
+    /* Grid for systems card */
+    .grid-bg {
+      background-image:
+        linear-gradient(rgba(139,92,246,.06) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(139,92,246,.06) 1px, transparent 1px);
+      background-size: 32px 32px;
+    }
+
+    /* Animations */
+    @keyframes pulse-dot {
+      0% { box-shadow: 0 0 0 0 rgba(74, 222, 128, .7); }
+      70% { box-shadow: 0 0 0 10px rgba(74, 222, 128, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(74, 222, 128, 0); }
+    }
+    .pulse-dot { animation: pulse-dot 2s infinite; }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+    }
+    .float { animation: float 6s ease-in-out infinite; }
+
+    .reveal { opacity: 0; transform: translateY(24px); transition: opacity .8s ease, transform .8s ease; }
+    .reveal.in { opacity: 1; transform: translateY(0); }
+
+    @keyframes scan {
+      0% { top: 0%; }
+      100% { top: 100%; }
+    }
+    .scan-line {
+      position: absolute; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, transparent, #8B5CF6, transparent);
+      animation: scan 4s linear infinite; opacity: .5;
+    }
+
+    .toast { transform: translateY(20px); opacity: 0; transition: all .3s ease; }
+    .toast.show { transform: translateY(0); opacity: 1; }
+
+    /* Mobile menu */
+    .mobile-menu { max-height: 0; overflow: hidden; transition: max-height .4s ease; }
+    .mobile-menu.open { max-height: 400px; }
+  </style>
+</head>
+
+<body class="font-body antialiased">
+
+  <!-- Cursor -->
+  <div class="cursor-dot" id="cursorDot"></div>
+  <div class="cursor-ring" id="cursorRing"></div>
+
+  <!-- ============ NAVBAR ============ -->
+  <header class="fixed top-4 inset-x-0 z-50 px-4">
+    <nav class="max-w-6xl mx-auto backdrop-blur-md bg-[#0A0A10]/80 border border-line rounded-full px-5 py-3 flex items-center justify-between">
+      <a href="#top" class="font-display font-bold tracking-tight text-white flex items-center gap-2">
+        VM<span class="text-accent">.</span>DEV
+      </a>
+
+      <ul class="hidden md:flex items-center gap-7 text-sm text-zinc-400">
+        <li><a href="#about" class="hover:text-white transition">About</a></li>
+        <li><a href="#projects" class="hover:text-white transition">Projects</a></li>
+        <li><a href="#experience" class="hover:text-white transition">Experience</a></li>
+        <li><a href="#skills" class="hover:text-white transition">Skills</a></li>
+        <li><a href="#contact" class="hover:text-white transition">Contact</a></li>
+      </ul>
+
+      <div class="flex items-center gap-3">
+        <a href="#contact" class="glow-btn hidden sm:inline-flex items-center gap-2 bg-accent text-white text-sm font-semibold px-4 py-2 rounded-full transition">
+          Let's Talk <i data-lucide="arrow-up-right" class="w-4 h-4"></i>
+        </a>
+        <button id="menuBtn" aria-label="Toggle menu" class="md:hidden text-white p-2">
+          <i data-lucide="menu" class="w-5 h-5"></i>
+        </button>
+      </div>
+    </nav>
+
+    <div id="mobileMenu" class="mobile-menu md:hidden max-w-6xl mx-auto mt-2 backdrop-blur-md bg-[#0A0A10]/95 border border-line rounded-2xl">
+      <ul class="flex flex-col gap-1 p-4 text-zinc-300 font-mono text-sm">
+        <li><a href="#about" class="block px-3 py-2 rounded-lg hover:bg-white/5">About</a></li>
+        <li><a href="#projects" class="block px-3 py-2 rounded-lg hover:bg-white/5">Projects</a></li>
+        <li><a href="#experience" class="block px-3 py-2 rounded-lg hover:bg-white/5">Experience</a></li>
+        <li><a href="#skills" class="block px-3 py-2 rounded-lg hover:bg-white/5">Skills</a></li>
+        <li><a href="#contact" class="block px-3 py-2 rounded-lg hover:bg-white/5">Contact</a></li>
+      </ul>
+    </div>
+  </header>
+
+  <main id="top">
+
+    <!-- ============ HERO ============ -->
+    <section class="relative min-h-screen flex items-center pt-32 pb-20 px-6 overflow-hidden">
+      <div class="glow-orb w-72 h-72 -top-10 -left-20"></div>
+      <div class="glow-orb w-80 h-80 bottom-0 right-0 opacity-60"></div>
+
+      <div class="relative z-10 max-w-6xl mx-auto w-full grid lg:grid-cols-2 gap-14 items-center">
+        <div class="reveal">
+          <span class="inline-flex items-center gap-2 font-mono text-xs tracking-widest text-zinc-300 border border-line bg-surface px-3 py-1.5 rounded-full">
+            <span class="w-2 h-2 rounded-full bg-green-400 pulse-dot"></span>
+            AVAILABLE FOR CUSTOM CLIENT BUILDS
+          </span>
+
+          <h1 class="font-display font-black text-4xl sm:text-6xl lg:text-7xl leading-[1.05] tracking-tight text-white mt-6">
+            Vinayak<br /><span class="text-accent">Mishra</span>
+          </h1>
+
+          <p class="mt-6 inline-flex font-mono text-xs sm:text-sm text-accent border border-accent/40 bg-accent/10 px-3 py-1.5 rounded-lg">
+            Custom Software Developer · IIT Madras Scholar
+          </p>
+
+          <p class="mt-6 text-zinc-400 text-base sm:text-lg leading-relaxed max-w-xl">
+            Transforming complex operational bottlenecks, unorganized data, and leaking offline workflows into bespoke, deterministic software engines.
+          </p>
+
+          <div class="mt-8 flex flex-wrap gap-3">
+            <a href="https://wa.me/919508355456" target="_blank" rel="noopener" class="card inline-flex items-center gap-2 px-4 py-2.5 rounded-full text-sm font-medium">
+              <i data-lucide="message-circle" class="w-4 h-4 text-accent"></i> +91 9508355456
+            </a>
+            <button type="button" data-copy="vinayakmishra923@gmail.com" class="copy-btn card inline-flex items-center gap-2 px-4 py-2.5 rounded-full text-sm font-medium">
+              <i data-lucide="mail" class="w-4 h-4 text-accent"></i> Email
+            </button>
+            <a href="https://github.com/vinayakmishra-c0de" target="_blank" rel="noopener" class="card inline-flex items-center gap-2 px-4 py-2.5 rounded-full text-sm font-medium">
+              <i data-lucide="github" class="w-4 h-4 text-accent"></i> GitHub
+            </a>
+            <a href="https://www.linkedin.com/in/vinayak-mishra-43545a300/" target="_blank" rel="noopener" class="card inline-flex items-center gap-2 px-4 py-2.5 rounded-full text-sm font-medium">
+              <i data-lucide="linkedin" class="w-4 h-4 text-accent"></i> LinkedIn
+            </a>
+          </div>
+        </div>
+
+        <!-- Right: Photo + diagnostic card -->
+        <div class="reveal relative float">
+          <div class="photo-frame aspect-[4/5] max-w-md mx-auto lg:ml-auto">
+            <img src="vinayak.jpg" alt="Vinayak Mishra" />
+            <div class="scan-line z-[3]"></div>
+            <div class="absolute bottom-5 left-5 right-5 z-[3]">
+              <p class="font-mono text-[11px] tracking-widest text-accent">// OPERATOR_ID: VM-IITM</p>
+              <p class="font-display text-lg text-white font-bold mt-1">Vinayak Mishra</p>
+            </div>
+          </div>
+
+          <div class="card grid-bg rounded-2xl p-5 mt-6 max-w-md mx-auto lg:ml-auto lg:-mt-16 lg:mr-[-2rem] relative z-[4] backdrop-blur-md">
+            <div class="flex items-center justify-between mb-4">
+              <span class="font-mono text-[11px] tracking-widest text-zinc-500">SYSTEM_DIAGNOSTIC</span>
+              <span class="font-mono text-[11px] text-green-400">● ONLINE</span>
+            </div>
+            <div class="grid grid-cols-3 gap-3">
+              <div class="border border-line rounded-xl p-3 text-center">
+                <p class="font-display font-bold text-white text-lg">99.98%</p>
+                <p class="font-mono text-[10px] text-zinc-500 mt-1">deterministic</p>
+              </div>
+              <div class="border border-line rounded-xl p-3 text-center">
+                <p class="font-display font-bold text-white text-lg">IITM</p>
+                <p class="font-mono text-[10px] text-zinc-500 mt-1">Verified</p>
+              </div>
+              <div class="border border-line rounded-xl p-3 text-center">
+                <p class="font-display font-bold text-white text-lg">0%</p>
+                <p class="font-mono text-[10px] text-zinc-500 mt-1">Zero Slop</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ PROJECTS ============ -->
+    <section id="projects" class="relative py-24 px-6">
+      <div class="max-w-6xl mx-auto">
+        <div class="reveal mb-14">
+          <p class="font-mono text-xs tracking-widest text-accent">// 01 — CLIENT PROJECTS</p>
+          <h2 class="font-display font-bold text-3xl sm:text-5xl text-white mt-3">Selected Engineering Work</h2>
+        </div>
+
+        <div class="space-y-6">
+          <!-- 01 -->
+          <article class="reveal card rounded-2xl p-7 sm:p-10 grid md:grid-cols-12 gap-6">
+            <div class="md:col-span-2">
+              <p class="font-display text-5xl font-black text-accent/80">01</p>
+            </div>
+            <div class="md:col-span-10">
+              <h3 class="font-display text-xl sm:text-2xl font-bold text-white">Institutional Closed-Loop Inventory &amp; POS Engine</h3>
+              <div class="grid md:grid-cols-2 gap-6 mt-6">
+                <div>
+                  <p class="font-mono text-[11px] tracking-widest text-zinc-500 mb-2">CLIENT PROBLEM</p>
+                  <p class="text-zinc-400 text-sm leading-relaxed">Manual ledger overwrites, stock shrinkage, and chaotic uniform exchanges in academic campuses.</p>
+                </div>
+                <div>
+                  <p class="font-mono text-[11px] tracking-widest text-accent mb-2">ENGINEERING SOLUTION</p>
+                  <p class="text-zinc-300 text-sm leading-relaxed">Single-click 42ms barcode reconciliation, quarantined defect state machine, and auto vendor debits.</p>
+                </div>
+              </div>
+              <div class="flex flex-wrap gap-2 mt-6">
+                <span class="font-mono text-[11px] border border-line bg-canvas px-2.5 py-1 rounded-md text-zinc-400">React</span>
+                <span class="font-mono text-[11px] border border-line bg-canvas px-2.5 py-1 rounded-md text-zinc-400">TypeScript</span>
+                <span class="font-mono text-[11px] border border-line bg-canvas px-2.5 py-1 rounded-md text-zinc-400">Node.js</span>
+                <span class="font-mono text-[11px] border border-line bg-canvas px-2.5 py-1 rounded-md text-zinc-400">SQLite / PostgreSQL</span>
+              </div>
+            </div>
+          </article>
+
+          <!-- 02 -->
+          <article class="reveal card rounded-2xl p-7 sm:p-10 grid md:grid-cols-12 gap-6">
+            <div class="md:col-span-2">
+              <p class="font-display text-5xl font-black text-accent/80">02</p>
+            </div>
+            <div class="md:col-span-10">
+              <h3 class="font-display text-xl sm:text-2xl font-bold text-white">B2B Capital Allocation &amp; Credit Exposure Dashboard</h3>
+              <div class="grid md:grid-cols-2 gap-6 mt-6">
+                <div>
+                  <p class="font-mono text-[11px] tracking-widest text-zinc-500 mb-2">CLIENT PROBLEM</p>
+                  <p class="text-zinc-400 text-sm leading-relaxed">Wholesaler bleeding money through untracked credit limits and delayed merchant settlements.</p>
+                </div>
+                <div>
+                  <p class="font-mono text-[11px] tracking-widest text-accent mb-2">ENGINEERING SOLUTION</p>
+                  <p class="text-zinc-300 text-sm leading-relaxed">Real-time credit exposure limiters with automated dispatch locks and dead capital liquidation triggers.</p>
+                </div>
+              </div>
+              <div class="flex flex-wrap gap-2 mt-6">
+                <span class="font-mono text-[11px] border border-line bg-canvas px-2.5 py-1 rounded-md text-zinc-400">React</span>
+                <span class="font-mono text-[11px] border border-line bg-canvas px-2.5 py-1 rounded-md text-zinc-400">Tailwind CSS</span>
+                <span class="font-mono text-[11px] border border-line bg-canvas px-2.5 py-1 rounded-md text-zinc-400">Financial Vector Math</span>
+                <span class="font-mono text-[11px] border border-line bg-canvas px-2.5 py-1 rounded-md text-zinc-400">REST APIs</span>
+              </div>
+            </div>
+          </article>
+
+          <!-- 03 -->
+          <article class="reveal card rounded-2xl p-7 sm:p-10 grid md:grid-cols-12 gap-6">
+            <div class="md:col-span-2">
+              <p class="font-display text-5xl font-black text-accent/80">03</p>
+            </div>
+            <div class="md:col-span-10">
+              <h3 class="font-display text-xl sm:text-2xl font-bold text-white">High-Volume Workflow Normalization Pipeline</h3>
+              <div class="grid md:grid-cols-2 gap-6 mt-6">
+                <div>
+                  <p class="font-mono text-[11px] tracking-widest text-zinc-500 mb-2">CLIENT PROBLEM</p>
+                  <p class="text-zinc-400 text-sm leading-relaxed">Cluttered multi-batch spreadsheets leading to accounting errors and slow report generation.</p>
+                </div>
+                <div>
+                  <p class="font-mono text-[11px] tracking-widest text-accent mb-2">ENGINEERING SOLUTION</p>
+                  <p class="text-zinc-300 text-sm leading-relaxed">Bidirectional Excel/CSV ingestion engine with schema validation and cryptographic audit trails.</p>
+                </div>
+              </div>
+              <div class="flex flex-wrap gap-2 mt-6">
+                <span class="font-mono text-[11px] border border-line bg-canvas px-2.5 py-1 rounded-md text-zinc-400">Python</span>
+                <span class="font-mono text-[11px] border border-line bg-canvas px-2.5 py-1 rounded-md text-zinc-400">TypeScript</span>
+                <span class="font-mono text-[11px] border border-line bg-canvas px-2.5 py-1 rounded-md text-zinc-400">Fast In-Memory Parser</span>
+              </div>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ EXPERIENCE & EDUCATION ============ -->
+    <section id="experience" class="relative py-24 px-6">
+      <div class="max-w-6xl mx-auto">
+        <div class="reveal mb-14">
+          <p class="font-mono text-xs tracking-widest text-accent">// 02 — TIMELINE</p>
+          <h2 class="font-display font-bold text-3xl sm:text-5xl text-white mt-3">Experience &amp; Education</h2>
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-6">
+          <div class="reveal card rounded-2xl p-8">
+            <div class="flex items-center gap-3 mb-6">
+              <div class="w-10 h-10 rounded-xl bg-accent/15 border border-accent/40 flex items-center justify-center">
+                <i data-lucide="briefcase" class="w-5 h-5 text-accent"></i>
+              </div>
+              <h3 class="font-display text-lg font-bold text-white">Work Experience &amp; Client Engagements</h3>
+            </div>
+            <ul class="space-y-6 border-l border-line pl-6">
+              <li class="relative">
+                <span class="absolute -left-[31px] top-1.5 w-2.5 h-2.5 rounded-full bg-accent shadow-[0_0_10px_#8B5CF6]"></span>
+                <p class="font-mono text-[11px] text-zinc-500">FREELANCE / CONTRACT</p>
+                <p class="font-semibold text-white mt-1">Custom Software Developer</p>
+                <p class="text-sm text-zinc-400 mt-2 leading-relaxed">Designing and shipping bespoke inventory, finance, and data-processing tools for small and medium businesses.</p>
+              </li>
+              <li class="relative">
+                <span class="absolute -left-[31px] top-1.5 w-2.5 h-2.5 rounded-full bg-zinc-600"></span>
+                <p class="font-mono text-[11px] text-zinc-500">SYSTEMS ENGINEERING</p>
+                <p class="font-semibold text-white mt-1">Systems Engineer</p>
+                <p class="text-sm text-zinc-400 mt-2 leading-relaxed">Building deterministic workflows, database schemas, and API automation for operational bottlenecks.</p>
+              </li>
+            </ul>
+          </div>
+
+          <div class="reveal card rounded-2xl p-8">
+            <div class="flex items-center gap-3 mb-6">
+              <div class="w-10 h-10 rounded-xl bg-accent/15 border border-accent/40 flex items-center justify-center">
+                <i data-lucide="graduation-cap" class="w-5 h-5 text-accent"></i>
+              </div>
+              <h3 class="font-display text-lg font-bold text-white">Academic Background</h3>
+            </div>
+            <ul class="space-y-6 border-l border-line pl-6">
+              <li class="relative">
+                <span class="absolute -left-[31px] top-1.5 w-2.5 h-2.5 rounded-full bg-accent shadow-[0_0_10px_#8B5CF6]"></span>
+                <p class="font-mono text-[11px] text-zinc-500">BS PROGRAMME</p>
+                <p class="font-semibold text-white mt-1">Indian Institute of Technology Madras</p>
+                <p class="text-sm text-zinc-400 mt-1">BS in Data Science &amp; Applications</p>
+              </li>
+              <li class="relative">
+                <span class="absolute -left-[31px] top-1.5 w-2.5 h-2.5 rounded-full bg-zinc-600"></span>
+                <p class="font-mono text-[11px] text-zinc-500">CERTIFICATION</p>
+                <p class="font-semibold text-white mt-1">AI Certification</p>
+                <p class="text-sm text-zinc-400 mt-1">Indian Institute of Technology Bombay</p>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ SKILLS BENTO ============ -->
+    <section id="skills" class="relative py-24 px-6">
+      <div class="max-w-6xl mx-auto">
+        <div class="reveal mb-14">
+          <p class="font-mono text-xs tracking-widest text-accent">// 03 — STACK</p>
+          <h2 class="font-display font-bold text-3xl sm:text-5xl text-white mt-3">Skills &amp; Tooling</h2>
+        </div>
+
+        <div class="grid md:grid-cols-3 gap-5">
+          <div class="reveal card rounded-2xl p-7 md:col-span-2">
+            <p class="font-mono text-[11px] tracking-widest text-accent mb-5">CORE ENGINEERING</p>
+            <div class="grid sm:grid-cols-2 gap-4">
+              <div class="border border-line rounded-xl p-5 bg-canvas">
+                <i data-lucide="layers" class="w-5 h-5 text-accent mb-3"></i>
+                <p class="font-semibold text-white">Full-Stack Architecture</p>
+              </div>
+              <div class="border border-line rounded-xl p-5 bg-canvas">
+                <i data-lucide="database" class="w-5 h-5 text-accent mb-3"></i>
+                <p class="font-semibold text-white">Custom Database Schema Design</p>
+              </div>
+              <div class="border border-line rounded-xl p-5 bg-canvas">
+                <i data-lucide="plug-zap" class="w-5 h-5 text-accent mb-3"></i>
+                <p class="font-semibold text-white">API Design &amp; Automation</p>
+              </div>
+              <div class="border border-line rounded-xl p-5 bg-canvas">
+                <i data-lucide="cpu" class="w-5 h-5 text-accent mb-3"></i>
+                <p class="font-semibold text-white">Algorithmic Optimization</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="reveal card rounded-2xl p-7">
+            <p class="font-mono text-[11px] tracking-widest text-accent mb-5">TOOLS</p>
+            <div class="flex flex-wrap gap-2">
+              <span class="font-mono text-xs border border-line bg-canvas px-3 py-1.5 rounded-lg text-zinc-300">Git</span>
+              <span class="font-mono text-xs border border-line bg-canvas px-3 py-1.5 rounded-lg text-zinc-300">GitHub</span>
+              <span class="font-mono text-xs border border-line bg-canvas px-3 py-1.5 rounded-lg text-zinc-300">VS Code</span>
+              <span class="font-mono text-xs border border-line bg-canvas px-3 py-1.5 rounded-lg text-zinc-300">Postman</span>
+              <span class="font-mono text-xs border border-line bg-canvas px-3 py-1.5 rounded-lg text-zinc-300">Linux Terminal</span>
+              <span class="font-mono text-xs border border-line bg-canvas px-3 py-1.5 rounded-lg text-zinc-300">Docker</span>
+              <span class="font-mono text-xs border border-line bg-canvas px-3 py-1.5 rounded-lg text-zinc-300">Vercel</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ CONTACT ============ -->
+    <section id="contact" class="relative py-24 px-6">
+      <div class="glow-orb w-96 h-96 top-10 left-1/2 -translate-x-1/2 opacity-40"></div>
+      <div class="max-w-6xl mx-auto relative z-10">
+        <div class="reveal card rounded-3xl p-6 sm:p-10">
+          <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-8">
+            <div>
+              <p class="font-mono text-xs tracking-widest text-accent">// 04 — CONTACT &amp; AUDIT</p>
+              <h2 class="font-display font-bold text-2xl sm:text-4xl text-white mt-3">Have a Problem? Let’s Architect the Solution</h2>
+              <p class="text-zinc-400 mt-2">Vinayak Mishra (IIT Madras Scholar)</p>
+            </div>
+            <a href="https://docs.google.com/forms/d/e/1FAIpQLSec-0rNrSF2-xP_PccbsVgZXdvJ2UmsRWZpJN8VaoXstI38rw/viewform?usp=header" target="_blank" rel="noopener" class="glow-btn inline-flex items-center gap-2 bg-accent text-white font-semibold text-sm px-5 py-3 rounded-full whitespace-nowrap transition self-start md:self-auto">
+              Open in Full Tab <i data-lucide="external-link" class="w-4 h-4"></i>
+            </a>
+          </div>
+
+          <div class="rounded-2xl overflow-hidden border border-line bg-canvas min-h-[680px]">
+            <iframe src="https://docs.google.com/forms/d/e/1FAIpQLSec-0rNrSF2-xP_PccbsVgZXdvJ2UmsRWZpJN8VaoXstI38rw/viewform?embedded=true" width="100%" height="680" frameborder="0" marginheight="0" marginwidth="0" loading="lazy" class="w-full min-h-[680px]" title="Contact Form">Loading…</iframe>
+          </div>
+
+          <div class="mt-8 grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div class="border border-line rounded-xl p-4 bg-canvas flex items-center justify-between gap-3">
+              <div class="min-w-0">
+                <p class="font-mono text-[10px] text-zinc-500">EMAIL</p>
+                <p class="text-sm text-white truncate">vinayakmishra923@gmail.com</p>
+              </div>
+              <button type="button" data-copy="vinayakmishra923@gmail.com" class="copy-btn shrink-0 p-2 rounded-lg border border-line hover:border-accent hover:text-accent transition" aria-label="Copy email">
+                <i data-lucide="copy" class="w-4 h-4"></i>
+              </button>
+            </div>
+            <a href="https://wa.me/919508355456" target="_blank" rel="noopener" class="border border-line rounded-xl p-4 bg-canvas hover:border-accent transition flex items-center gap-3">
+              <i data-lucide="message-circle" class="w-5 h-5 text-accent"></i>
+              <div>
+                <p class="font-mono text-[10px] text-zinc-500">WHATSAPP</p>
+                <p class="text-sm text-white">wa.me/919508355456</p>
+              </div>
+            </a>
+            <a href="https://github.com/vinayakmishra-c0de" target="_blank" rel="noopener" class="border border-line rounded-xl p-4 bg-canvas hover:border-accent transition flex items-center gap-3">
+              <i data-lucide="github" class="w-5 h-5 text-accent"></i>
+              <div>
+                <p class="font-mono text-[10px] text-zinc-500">GITHUB</p>
+                <p class="text-sm text-white">vinayakmishra-c0de</p>
+              </div>
+            </a>
+            <a href="https://www.linkedin.com/in/vinayak-mishra-43545a300/" target="_blank" rel="noopener" class="border border-line rounded-xl p-4 bg-canvas hover:border-accent transition flex items-center gap-3">
+              <i data-lucide="linkedin" class="w-5 h-5 text-accent"></i>
+              <div>
+                <p class="font-mono text-[10px] text-zinc-500">LINKEDIN</p>
+                <p class="text-sm text-white">vinayak-mishra</p>
+              </div>
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ============ FOOTER ============ -->
+  <footer class="border-t border-line py-10 px-6">
+    <div class="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+      <p class="font-mono text-xs text-zinc-500">© Vinayak Mishra · Scholar, IIT Madras</p>
+      <a href="#top" class="inline-flex items-center gap-2 font-mono text-xs text-zinc-400 hover:text-accent transition">
+        Back to top <i data-lucide="arrow-up" class="w-4 h-4"></i>
+      </a>
+    </div>
+  </footer>
+
+  <!-- Toast -->
+  <div id="toast" class="toast fixed bottom-6 left-1/2 -translate-x-1/2 bg-surface border border-accent text-white font-mono text-xs px-4 py-2.5 rounded-full z-[60]">Copied to clipboard</div>
+
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script>
+    // Icons
+    document.addEventListener('DOMContentLoaded', () => {
+      if (window.lucide) lucide.createIcons();
+    });
+
+    // Magnetic cursor
+    const dot = document.getElementById('cursorDot');
+    const ring = document.getElementById('cursorRing');
+    let mx = 0, my = 0, rx = 0, ry = 0;
+    window.addEventListener('mousemove', e => {
+      mx = e.clientX; my = e.clientY;
+      dot.style.left = mx + 'px'; dot.style.top = my + 'px';
+    });
+    (function animateRing() {
+      rx += (mx - rx) * 0.18;
+      ry += (my - ry) * 0.18;
+      ring.style.left = rx + 'px';
+      ring.style.top = ry + 'px';
+      requestAnimationFrame(animateRing);
+    })();
+    document.querySelectorAll('a, button, .card').forEach(el => {
+      el.addEventListener('mouseenter', () => ring.classList.add('hover'));
+      el.addEventListener('mouseleave', () => ring.classList.remove('hover'));
+    });
+
+    // Mobile menu toggle
+    const mobileMenu = document.getElementById('mobileMenu');
+    document.getElementById('menuBtn').addEventListener('click', () => {
+      mobileMenu.classList.toggle('open');
+    });
+
+    // Smooth scroll
+    document.querySelectorAll('a[href^="#"]').forEach(link => {
+      link.addEventListener('click', e => {
+        const id = link.getAttribute('href');
+        if (id.length < 2) return;
+        const target = document.querySelector(id);
+        if (target) {
+          e.preventDefault();
+          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          mobileMenu.classList.remove('open');
+        }
+      });
+    });
+
+    // Copy to clipboard
+    const toast = document.getElementById('toast');
+    function showToast(msg) {
+      toast.textContent = msg;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 1800);
+    }
+    document.querySelectorAll('[data-copy]').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const text = btn.getAttribute('data-copy');
+        try {
+          await navigator.clipboard.writeText(text);
+          showToast('Copied: ' + text);
+        } catch (err) {
+          showToast('Copy failed, please copy manually');
+        }
+      });
+    });
+
+    // Reveal on scroll
+    const io = new IntersectionObserver(entries => {
+      entries.forEach(en => {
+        if (en.isIntersecting) { en.target.classList.add('in'); io.unobserve(en.target); }
+      });
+    }, { threshold: 0.12 });
+    document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+  </script>
+</body>
+</html>
